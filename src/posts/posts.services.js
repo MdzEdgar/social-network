@@ -1,27 +1,65 @@
-const postControllers = require('./posts.controllers')
+const uuid = require('uuid')
+const Posts = require('../models/posts.models')
 
-const getAllPosts = (req, res) => {
-    postControllers.findAllPosts()
-        .then((data) => {
-            res.status(200).json(data)
-        })
-        .catch((err) => {
-            res.status(400).json({err})
-        })
+const findAllPosts = async () => {
+    const posts = await Posts.findAll()
+    return posts
 }
 
-const getPostById = (req, res) => {
-    const id = req.params.id
-    postControllers.findPostById(id)
-        .then(data => {
-            if(data) {
-                res.status(200).json(data)
-            } else {
-                res.status(404).json({message: 'User not found'})
-            }
-        })
-        .catch(err => {
-            res.status(400).json({err})
-        })
+const findPostById = async (id) => {
+    const post = await Posts.findOne({
+        where: {
+            id: id
+        }
+    })
+    return post
+}
 
+const createPost = async (postObj) => {
+    const newPost = await Posts.create({
+        id: uuid.v4(),
+        content: postObj.content,
+        userId: postObj.userId
+    })
+    return newPost
+}
+
+const updatePost = async (postId, userId, postObj) => {
+    const selectedPost = await Posts.findOne({
+        where: {
+            id: postId,
+            userId: userId
+        }
+    })
+
+    if(!selectedPost) return null
+
+    const updatedPost = await selectedPost.update(postObj)
+
+    return updatedPost
+}
+
+const deletePost = async (postId, userId) => {
+    const selectedPost = await Posts.findOne({
+        where: {
+            id: postId,
+            userId: userId
+        }
+    })
+
+    if(!selectedPost) return null
+
+    const updatedPost = await selectedPost.update({
+        status: 'deleted'
+    })
+
+    return updatedPost
+}
+
+module.exports = {
+    findAllPosts,
+    findPostById,
+    createPost,
+    updatePost,
+    deletePost
 }
