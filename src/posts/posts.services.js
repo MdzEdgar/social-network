@@ -1,65 +1,79 @@
-const uuid = require('uuid')
-const Posts = require('../models/posts.models')
+const postControllers = require('./posts.controllers')
 
-const findAllPosts = async () => {
-    const posts = await Posts.findAll()
-    return posts
+const getAllPosts = (req, res) => {
+    postControllers.findAllPosts()
+        .then((data) => {
+            res.status(200).json(data)
+        })
+        .catch((err) => {
+            res.status(400).json({err})
+        })
 }
 
-const findPostById = async (id) => {
-    const post = await Posts.findOne({
-        where: {
-            id: id
-        }
-    })
-    return post
+const getPostById = (req, res) => {
+    const id = req.params.id
+    postControllers.findPostById(id)
+        .then(data => {
+            if(data) {
+                res.status(200).json(data)
+            } else {
+                res.status(404).json({message: 'Post not found'})
+            }
+        })
+        .catch(err => {
+            res.status(400).json({err})
+        })
 }
 
-const createPost = async (postObj) => {
-    const newPost = await Posts.create({
-        id: uuid.v4(),
-        content: postObj.content,
-        userId: postObj.userId
-    })
-    return newPost
+const postNewPost = (req, res) => {
+    const { content } = req.body
+    const userId = req.user.id
+    postControllers.createPost({content, userId})
+        .then(data => {
+            res.status(201).json(data)
+        })
+        .catch(err => {
+            res.status(400).json({err})
+        })
 }
 
-const updatePost = async (postId, userId, postObj) => {
-    const selectedPost = await Posts.findOne({
-        where: {
-            id: postId,
-            userId: userId
-        }
-    })
-
-    if(!selectedPost) return null
-
-    const updatedPost = await selectedPost.update(postObj)
-
-    return updatedPost
+const patchPost = (req, res) => {
+    const id = req.params.id 
+    const { content } = req.body
+    const userId = req.user.id
+    postControllers.updatePost(id, userId, {content})
+        .then(data => {
+            if(data) {
+                res.status(200).json(data)
+            } else {
+                res.status(404).json({message: "Post not found"})
+            }
+        })
+        .catch(err => {
+            res.status(400).json({err})
+        })
 }
 
-const deletePost = async (postId, userId) => {
-    const selectedPost = await Posts.findOne({
-        where: {
-            id: postId,
-            userId: userId
-        }
-    })
-
-    if(!selectedPost) return null
-
-    const updatedPost = await selectedPost.update({
-        status: 'deleted'
-    })
-
-    return updatedPost
+const deletePost = (req, res) => {
+    const id = req.params.id;
+    const userId = req.user.id
+    postControllers.deletePost(id, userId)
+        .then(data => {
+            if(data) {
+                res.status(200).json(data)
+            } else {
+                res.status(404).json({message: "Post not found"})
+            }
+        })
+        .catch(err => {
+            res.status(400).json({err})
+        })
 }
 
 module.exports = {
-    findAllPosts,
-    findPostById,
-    createPost,
-    updatePost,
+    getAllPosts,
+    getPostById,
+    postNewPost,
+    patchPost,
     deletePost
 }
