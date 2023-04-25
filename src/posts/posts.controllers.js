@@ -2,7 +2,10 @@ const uuid = require('uuid')
 const Posts = require('../models/posts.models')
 
 const findAllPosts = async () => {
-    const posts = await Posts.findAll()
+    const posts = await Posts.findAndCountAll({
+        limit,
+        offset
+    })
     return posts
 }
 
