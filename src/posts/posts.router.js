@@ -1,9 +1,9 @@
-const router = require("express").Router();
+const router = require('express').Router()
 
-const postServices = require("./posts.services");
+const postServices = require('./posts.services')
 const passportJwt = require("../middlewares/passport.middleware");
 
-router.route("/")
+router.route('/')
   .get(postServices.getAllPosts)
   .post(
     passportJwt.authenticate("jwt", { session: false }),
