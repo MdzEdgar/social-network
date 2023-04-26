@@ -1,5 +1,6 @@
 const uuid = require('uuid')
 const Posts = require('../models/posts.models')
+const Users = require('../models/users.models')
 
 const findAllPosts = async () => {
     const posts = await Posts.findAndCountAll({
@@ -16,6 +17,18 @@ const findPostById = async (id) => {
         }
     })
     return post
+}
+
+const findPostsByUserId = async (userId) => {
+    const posts = await Posts.findAll({
+        where: {
+            userId: userId
+        },
+        include: {
+            model: Users,
+            attributes: ["id", "firstName", "lastName"]
+        }
+    })
 }
 
 const createPost = async (postObj) => {
@@ -60,6 +73,7 @@ const deletePost = async (postId) => {
 module.exports = {
     findAllPosts,
     findPostById,
+    findPostsByUserId,
     createPost,
     updatePost,
     deletePost
