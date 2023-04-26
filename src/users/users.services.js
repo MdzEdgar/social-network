@@ -1,10 +1,24 @@
+const { host } = require('../../config')
 const userControllers = require('./users.controllers')
 //! const { findAllUsers, findUserById, createUser, updateUser } = require('./users.controllers')
 
 const getAllUsers = (req, res) => {
+    //TODO Agregar el limit y Offset desde los queries para manejar un contador y pasar el limit y el offset
+
+    const offset = Number(req.query.offset) || 0
+    const limit = Number(req.query.limit) || 10
     userControllers.findAllUsers()
         .then((data) => {
-            res.status(200).json(data)
+
+            const nextPageURL = (data.count - offset) > limit ? `${host}/api/v1/users?limit=${limit}&offset=${offset + limit}` : null
+            const prevPageUrl = (offset - limit) >= 0 ? `${host}/api/v1/users?limit=${limit}&offset=${offset - limit}` : null
+            
+            res.status(200).json({
+                count: data.count,
+                next: nextPageURL,
+                prev: prevPageUrl,
+                results: data.rows
+            })
         })
         .catch((err) => {
             res.status(400).json({message: 'Bad request', err})
