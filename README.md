@@ -6,16 +6,18 @@ Proyecto final del modulo en NodeJS
 
 TODO:
 
-- [x] Crud de usuarios
-- [x] Registro de usuarios
-- [ ] Manejar Publicaciones
-- [ ] Reaccionar a las publicaciones
-- [ ] Comentar publicaciones
-- [ ] Manejar seguidos y seguidores
-- [ ] Notificaciones
-- [ ] Publicaciones con imagenes
-- [ ] Solicitudes de amistad
-- [ ] Amigos en comun
-- [ ] Compartir publicacion
-- [ ] Favoritos
-- [ ] Login con diferentes cuentas
+ - [x] CRUD de usuarios 
+ - [x] Registro de Usuarios
+ - [x] Manejar Publicaciones (CRUD)
+ - [x] Reaccionar a las publicaciones
+ - [x] Comentar publicaciones
+ - [ ] Buscador de usuarios
+ - [x] Manejar seguidos y seguidores
+ - [ ] Publicaciones con imagenes
+ - [ ] Notificaciones
+ - [x] Feed con todas las publicaciones
+ - [ ] Solicitudes de amistad
+ - [ ] Amigos en comun
+ - [ ] Compartir publicacion
+ - [ ] Favoritos
+ - [ ] Login con diferentes cuentas
