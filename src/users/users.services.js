@@ -7,7 +7,7 @@ const getAllUsers = (req, res) => {
 
     const offset = Number(req.query.offset) || 0
     const limit = Number(req.query.limit) || 10
-    userControllers.findAllUsers()
+    userControllers.findAllUsers(limit, offset)
         .then((data) => {
 
             const nextPageURL = (data.count - offset) > limit ? `${host}/api/v1/users?limit=${limit}&offset=${offset + limit}` : null
@@ -47,7 +47,7 @@ const postNewUser = (req, res) => {
             res.status(201).json(data)
         })
         .catch(err => {
-            res.status(400).json({message: 'Bad request', err})
+            res.status(400).json({message: 'Bad request', err: err.message})
         })
 }
 
