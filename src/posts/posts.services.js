@@ -1,6 +1,6 @@
 const postControllers = require('./posts.controllers')
 const { host } = require('../../config')
-
+ 
 const getAllPosts = (req, res) => {
 
     const offset = Number(req.query.offset) || 0
@@ -8,7 +8,7 @@ const getAllPosts = (req, res) => {
 
     postControllers.findAllPosts(offset, limit)
         .then((data) => {
-
+            
             const nextPageUrl = (data.count - offset) > limit ? `${host}/api/v1/posts?limit=${limit}&offset=${offset + limit}`: null;
             const prevPageUrl = (offset - limit) >= 0 ? `${host}/api/v1/posts?limit=${limit}&offset=${offset - limit}`: null;
 
@@ -40,7 +40,7 @@ const getPostById = (req, res) => {
 }
 
 const getPostsByUser = (req, res) => {
-    const userId = req.params.id
+    const userId = req.params.id 
     postControllers.findPostsByUserId(userId)
         .then(data => {
             res.status(200).json(data)
@@ -51,7 +51,7 @@ const getPostsByUser = (req, res) => {
 }
 
 const getPostsByMyUser = (req, res) => {
-    const userId = req.user.id
+    const userId = req.user.id;
     postControllers.findPostsByUserId(userId)
         .then(data => {
             res.status(200).json(data)
@@ -61,11 +61,20 @@ const getPostsByMyUser = (req, res) => {
         })
 }
 
+
 const postNewPost = (req, res) => {
     const { content } = req.body
     const userId = req.user.id
+
+    
     postControllers.createPost({content, userId})
-        .then(data => {
+        .then(async(data) => {
+        
+            if(req.files && req.files.length){
+                //? Agregariamos los archivos a mi base de datos :D
+                await postControllers.createMultimediaPost(req.files, data.id)
+            }
+
             res.status(201).json(data)
         })
         .catch(err => {

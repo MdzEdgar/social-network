@@ -1,11 +1,19 @@
 const uuid = require('uuid')
 const Posts = require('../models/posts.models')
 const Users = require('../models/users.models')
+const PostMultimedia = require('../models/posts_multimedia.models')
 
-const findAllPosts = async () => {
+const { host } = require('../../config')
+
+const findAllPosts = async (offset, limit) => {
     const posts = await Posts.findAndCountAll({
-        limit,
-        offset
+        limit: limit,
+        offset: offset,
+        include: [{
+            model: Users
+        },{
+            model: PostMultimedia
+        }]
     })
     return posts
 }
@@ -22,13 +30,14 @@ const findPostById = async (id) => {
 const findPostsByUserId = async (userId) => {
     const posts = await Posts.findAll({
         where: {
-            userId: userId
+            userId : userId
         },
         include: {
             model: Users,
             attributes: ["id", "firstName", "lastName"]
-        }
+        },
     })
+    return posts
 }
 
 const createPost = async (postObj) => {
@@ -40,10 +49,11 @@ const createPost = async (postObj) => {
     return newPost
 }
 
-const updatePost = async (postId, postObj) => {
+const updatePost = async (postId, userId, postObj) => {
     const selectedPost = await Posts.findOne({
         where: {
-            id: postId
+            id: postId,
+            userId: userId
         }
     })
 
@@ -54,10 +64,11 @@ const updatePost = async (postId, postObj) => {
     return updatedPost
 }
 
-const deletePost = async (postId) => {
+const deletePost = async (postId, userId) => {
     const selectedPost = await Posts.findOne({
         where: {
-            id: postId
+            id: postId,
+            userId: userId
         }
     })
 
@@ -70,11 +81,28 @@ const deletePost = async (postId) => {
     return updatedPost
 }
 
+const createMultimediaPost = async (multimediaArray, postId) => {
+
+    const arrayData = multimediaArray.map(obj => {
+        return {
+            id: uuid.v4(),
+            url: `${host}/api/v1/uploads/${obj.filename}`,
+            postId: postId,
+            type: obj.type,
+            status: 'active'
+        }
+    })
+
+    const newMultimedia = await PostMultimedia.bulkCreate(arrayData)
+    return newMultimedia
+}
+
 module.exports = {
     findAllPosts,
     findPostById,
     findPostsByUserId,
     createPost,
     updatePost,
-    deletePost
+    deletePost,
+    createMultimediaPost
 }
